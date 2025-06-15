@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My AI Journey Begins!</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: radial-gradient(circle at center, #101e2e 0%, #050c17 100%);
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      color: #e0f7fa;
+    }
+
+    .container {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+      padding: 20px;
+    }
+
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 60px 50px;
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(18px);
+      box-shadow: 0 0 60px rgba(0, 255, 255, 0.1);
+      z-index: 2;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 0.4em;
+      color: #00ffe1;
+      text-shadow: 0 0 10px #00ffe1;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 2em;
+      line-height: 1.6;
+      opacity: 0.9;
+    }
+
+    button {
+      padding: 14px 30px;
+      font-size: 1em;
+      background-color: #00ffe1;
+      color: #00171f;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #00ccba;
+      transform: scale(1.05);
+    }
+
+    #quote {
+      margin-top: 30px;
+      font-style: italic;
+      font-size: 1.1em;
+      opacity: 0;
+      min-height: 2.5em;
+      transition: opacity 0.8s ease;
+    }
+
+    /* Background Animation */
+    .parallax {
+      position: absolute;
+      top: 0; left: 0;
+      width: 200%;
+      height: 200%;
+      background: url('https://www.transparenttextures.com/patterns/stardust.png');
+      animation: drift 90s linear infinite;
+      opacity: 0.03;
+      z-index: 0;
+    }
+
+    @keyframes drift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(-50%, -50%); }
+    }
+
+    .circles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .circles div {
+      position: absolute;
+      display: block;
+      border-radius: 50%;
+      background: rgba(0, 255, 255, 0.05);
+      animation: rise 25s linear infinite;
+    }
+
+    @keyframes rise {
+      0% {
+        transform: translateY(100vh) scale(0.4);
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.6;
+      }
+      100% {
+        transform: translateY(-10vh) scale(1.2);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 2em; }
+      p { font-size: 1em; }
+      .glass-panel { padding: 40px 25px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Parallax Background -->
+  <div class="parallax"></div>
+
+  <!-- Floating Circles -->
+  <div class="circles" id="circles"></div>
+
+  <!-- Main Console -->
+  <div class="container">
+    <div class="glass-panel">
+      <h1>My AI Journey Begins</h1>
+      <p>You're not just witnessing the future — you're *engineering* it.</p>
+      <button onclick="rotateQuote()">Generate Code of Wisdom</button>
+      <div id="quote"></div>
+    </div>
+  </div>
+
+  <!-- JS for Quotes + Circles -->
+  <script>
+    const quotes = [
+      "You are the interface between curiosity and creation.",
+      "Code is the syntax of your ambition.",
+      "The algorithm isn’t out there — it’s within you.",
+      "Move like a function. Think like a system. Build like a soul.",
+      "A million minds will use what one mind dared to build.",
+      "Prompt by prompt, you’re waking up your infinite self.",
+      "Your intelligence isn’t artificial. It’s amplified.",
+      "You’re not here to automate. You’re here to accelerate."
+    ];
+
+    function rotateQuote() {
+      const quoteEl = document.getElementById('quote');
+      quoteEl.style.opacity = 0;
+      setTimeout(() => {
+        quoteEl.innerText = quotes[Math.floor(Math.random() * quotes.length)];
+        quoteEl.style.opacity = 1;
+      }, 300);
+    }
+
+    // Generate floating circles
+    const circles = document.getElementById('circles');
+    for (let i = 0; i < 50; i++) {
+      const circle = document.createElement('div');
+      const size = Math.random() * 60 + 20;
+      circle.style.width = `${size}px`;
+      circle.style.height = `${size}px`;
+      circle.style.left = `${Math.random() * 100}%`;
+      circle.style.animationDuration = `${15 + Math.random() * 25}s`;
+      circle.style.animationDelay = `${Math.random() * 20}s`;
+      circles.appendChild(circle);
+    }
+  </script>
+
+</body>
+</html>
