@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - Interactive Greeting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .welcome-title {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .greeting {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .mood-response {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+            margin-left: 5px;
+        }
+
+        .reset-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        .reset-btn:hover {
+            background: #5a6268;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="welcome-title">Welcome! 👋</h1>
+        
+        <div id="form-section">
+            <div class="input-group">
+                <label for="name">What's your name?</label>
+                <input type="text" id="name" placeholder="Enter your name..." required>
+            </div>
+            
+            <div class="input-group">
+                <label for="mood">How are you feeling today?</label>
+                <select id="mood" required>
+                    <option value="">Select your mood...</option>
+                    <option value="happy">Happy 😊</option>
+                    <option value="sad">Sad 😢</option>
+                    <option value="okay">Okay 😐</option>
+                </select>
+            </div>
+            
+            <button class="submit-btn" onclick="generateGreeting()">Get Greeting</button>
+        </div>
+        
+        <div id="result-section" class="result">
+            <div id="greeting" class="greeting"></div>
+            <div id="mood-response" class="mood-response"></div>
+            <button class="reset-btn" onclick="resetForm()">Start Over</button>
+        </div>
+    </div>
+
+    <script>
+        function generateGreeting() {
+            const name = document.getElementById('name').value.trim();
+            const mood = document.getElementById('mood').value;
+            
+            if (!name || !mood) {
+                alert('Please enter both your name and mood!');
+                return;
+            }
+            
+            // Get current time
+            const now = new Date();
+            const hour = now.getHours();
+            
+            // Define special names
+            const myName = "Gemini";
+            const myName1 = "Gemini1";
+            
+            // Determine time-based greeting
+            let timeGreeting;
+            if (hour >= 5 && hour < 12) {
+                timeGreeting = "Good morning";
+            } else if (hour >= 12 && hour < 17) {
+                timeGreeting = "Good afternoon";
+            } else {
+                timeGreeting = "Good evening";
+            }
+            
+            // Generate greeting
+            let greetingText;
+            if (name === myName) {
+                greetingText = `${timeGreeting}! It's the awesome AI Director, ${name}! 🎉`;
+            } else if (name === myName1) {
+                greetingText = `${timeGreeting}! It's the awesome test, ${name}! 🎉`;
+            } else {
+                greetingText = `${timeGreeting} ${name}, welcome! Glad to have you here. 👋`;
+            }
+            
+            // Generate mood response
+            let moodText;
+            switch(mood) {
+                case 'happy':
+                    moodText = "Great to see you're in a good mood! 😊";
+                    break;
+                case 'sad':
+                    moodText = "Hope your day gets better! Here's a virtual hug 🤗";
+                    break;
+                case 'okay':
+                    moodText = "Hope your day gets even better! 🌟";
+                    break;
+                default:
+                    moodText = "Thanks for sharing how you're feeling!";
+            }
+            
+            // Display results
+            document.getElementById('greeting').textContent = greetingText;
+            document.getElementById('mood-response').textContent = moodText;
+            document.getElementById('result-section').style.display = 'block';
+            document.getElementById('form-section').style.display = 'none';
+        }
+        
+        function resetForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('mood').value = '';
+            document.getElementById('result-section').style.display = 'none';
+            document.getElementById('form-section').style.display = 'block';
+        }
+        
+        // Allow Enter key to submit
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    generateGreeting();
+                }
+            });
+            
+            document.getElementById('mood').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    generateGreeting();
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
