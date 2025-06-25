@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hangman Game</title>
+    <!-- Techno Fonts for Cyberpunk Theme -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00e6ff;
+            --neon-pink: #ff007f;
+            --white: #ffffff;
+            --dark-bg: #0d0d0d;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --blur-amount: 30px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Share Tech Mono', 'Poppins', sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top left, #1a0033 0%, #000000 60%) no-repeat;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: white;
+        }
+
+        .game-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(var(--blur-amount));
+            border: 1px solid var(--neon-cyan);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 0 15px var(--neon-cyan), 0 0 25px var(--neon-pink);
+        }
+
+        .maga-banner {
+            text-align: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 15px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-value {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 10px var(--neon-cyan);
+        }
+
+        .hangman-drawing {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .hangman-svg {
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .hangman-part {
+            stroke: white;
+            stroke-width: 3;
+            stroke-linecap: round;
+            fill: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .hangman-part.visible {
+            opacity: 1;
+        }
+
+        .word-display {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 2em;
+            letter-spacing: 5px;
+        }
+
+        .keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin: 20px 0;
+        }
+
+        .key {
+            background: var(--glass-bg);
+            border: 1px solid var(--neon-cyan);
+            padding: 12px;
+            font-size: 1em;
+            color: var(--white);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 0 6px rgba(0, 230, 255, 0.4);
+        }
+
+        .key:hover {
+            background: rgba(0, 230, 255, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 12px var(--neon-pink);
+        }
+
+        .key.used {
+            background: rgba(255, 0, 0, 0.4);
+            cursor: not-allowed;
+        }
+
+        .key.correct {
+            background: rgba(0, 255, 0, 0.3);
+        }
+
+        .message {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 1.2em;
+            min-height: 1.2em;
+        }
+
+        .new-game-btn {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 2px solid var(--neon-cyan);
+            padding: 12px 28px;
+            font-size: 1em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.3s ease, background 0.3s ease;
+            box-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        .new-game-btn:hover {
+            background: rgba(0, 230, 255, 0.15);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 12px var(--neon-pink);
+        }
+
+        @media (max-width: 600px) {
+            .key {
+                font-size: 1em;
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="maga-banner cyber-banner">CYBERPUNK HANGMAN</div>
+        <div class="score-board">
+            <div class="score-item">
+                <div>Current Score</div>
+                <div id="current-score" class="score-value">0</div>
+            </div>
+            <div class="score-item">
+                <div>High Score</div>
+                <div id="high-score" class="score-value">0</div>
+            </div>
+            <div class="score-item">
+                <div>Lives</div>
+                <div id="lives" class="score-value">6</div>
+            </div>
+        </div>
+
+        <div id="hangman" class="hangman-drawing">
+            <svg class="hangman-svg" viewBox="0 0 300 300">
+                <!-- Base -->
+                <line x1="50" y1="250" x2="250" y2="250" class="hangman-part" id="base"/>
+                <!-- Vertical pole -->
+                <line x1="100" y1="250" x2="100" y2="50" class="hangman-part" id="pole"/>
+                <!-- Horizontal beam -->
+                <line x1="100" y1="50" x2="200" y2="50" class="hangman-part" id="beam"/>
+                <!-- Rope -->
+                <line x1="200" y1="50" x2="200" y2="90" class="hangman-part" id="rope"/>
+                <!-- Head -->
+                <circle cx="200" cy="110" r="20" class="hangman-part" id="head"/>
+                <!-- Body -->
+                <line x1="200" y1="130" x2="200" y2="190" class="hangman-part" id="body"/>
+                <!-- Left arm -->
+                <line x1="200" y1="150" x2="160" y2="180" class="hangman-part" id="leftArm"/>
+                <!-- Right arm -->
+                <line x1="200" y1="150" x2="240" y2="180" class="hangman-part" id="rightArm"/>
+                <!-- Left leg -->
+                <line x1="200" y1="190" x2="170" y2="230" class="hangman-part" id="leftLeg"/>
+                <!-- Right leg -->
+                <line x1="200" y1="190" x2="230" y2="230" class="hangman-part" id="rightLeg"/>
+            </svg>
+        </div>
+        <div id="word" class="word-display"></div>
+        <div id="message" class="message"></div>
+        <div id="keyboard" class="keyboard"></div>
+        <div style="text-align: center;">
+            <button id="new-game" class="new-game-btn">New Game</button>
+        </div>
+    </div>
+
+    <script>
+        const words = ['python', 'programming', 'computer', 'algorithm', 'database', 'network', 
+                      'developer', 'software', 'keyboard', 'monitor', 'internet'];
+        
+        const SCORE_CONFIG = {
+            correctLetter: 10,
+            wordCompletion: 50,
+            lifeMultiplier: 2
+        };
+
+        const HANGMAN_PARTS = [
+            'head',
+            'body',
+            'leftArm',
+            'rightArm',
+            'leftLeg',
+            'rightLeg',
+            'rope',
+            'beam',
+            'pole',
+            'base'
+        ];
+
+        class HangmanGame {
+            constructor() {
+                this.word = '';
+                this.guessedLetters = new Set();
+                this.lives = 6;
+                this.score = 0;
+                this.highScore = parseInt(localStorage.getItem('hangmanHighScore')) || 0;
+                this.gameOver = false;
+
+                this.initializeGame();
+                this.setupEventListeners();
+                this.updateDisplay();
+                this.initializeHangman();
+            }
+
+            initializeGame() {
+                this.word = words[Math.floor(Math.random() * words.length)];
+                this.guessedLetters.clear();
+                this.lives = 6;
+                this.score = 0;
+                this.gameOver = false;
+                this.createKeyboard();
+                this.updateDisplay();
+                this.resetHangman();
+            }
+
+            initializeHangman() {
+                // Show all parts initially (gallows only)
+                ['base', 'pole', 'beam', 'rope'].forEach(partId => {
+                    document.getElementById(partId).classList.add('visible');
+                });
+            }
+
+            resetHangman() {
+                // Hide all body parts
+                ['head', 'body', 'leftArm', 'rightArm', 'leftLeg', 'rightLeg'].forEach(partId => {
+                    document.getElementById(partId).classList.remove('visible');
+                });
+                // Show gallows
+                ['base', 'pole', 'beam', 'rope'].forEach(partId => {
+                    document.getElementById(partId).classList.add('visible');
+                });
+            }
+
+            updateHangman() {
+                const partsToShow = 6 - this.lives;
+                for (let i = 0; i < partsToShow; i++) {
+                    const partId = HANGMAN_PARTS[i];
+                    document.getElementById(partId).classList.add('visible');
+                }
+            }
+
+            createKeyboard() {
+                const keyboard = document.getElementById('keyboard');
+                keyboard.innerHTML = '';
+                for (let i = 97; i <= 122; i++) {
+                    const letter = String.fromCharCode(i);
+                    const button = document.createElement('button');
+                    button.textContent = letter;
+                    button.className = 'key';
+                    button.dataset.letter = letter;
+                    keyboard.appendChild(button);
+                }
+            }
+
+            setupEventListeners() {
+                document.getElementById('keyboard').addEventListener('click', (e) => {
+                    if (e.target.classList.contains('key') && !this.gameOver) {
+                        this.makeGuess(e.target.dataset.letter);
+                    }
+                });
+
+                document.getElementById('new-game').addEventListener('click', () => {
+                    this.initializeGame();
+                });
+
+                // Add keyboard support
+                document.addEventListener('keydown', (e) => {
+                    if (!this.gameOver && e.key.match(/^[a-z]$/)) {
+                        this.makeGuess(e.key);
+                    }
+                });
+            }
+
+            makeGuess(letter) {
+                if (this.guessedLetters.has(letter)) return;
+
+                this.guessedLetters.add(letter);
+                const button = document.querySelector(`[data-letter="${letter}"]`);
+                
+                if (this.word.includes(letter)) {
+                    button.classList.add('correct');
+                    const letterCount = (this.word.match(new RegExp(letter, 'g')) || []).length;
+                    const points = SCORE_CONFIG.correctLetter * letterCount;
+                    const bonus = SCORE_CONFIG.lifeMultiplier * this.lives;
+                    this.score += points + bonus;
+                    this.showMessage(`Correct! +${points} points (Letter) +${bonus} points (Life bonus)`);
+                } else {
+                    button.classList.add('used');
+                    this.lives--;
+                    this.updateHangman();
+                    this.showMessage('Wrong guess!');
+                }
+
+                this.checkGameState();
+                this.updateDisplay();
+            }
+
+            checkGameState() {
+                const wordArray = this.word.split('');
+                if (wordArray.every(letter => this.guessedLetters.has(letter))) {
+                    this.score += SCORE_CONFIG.wordCompletion;
+                    this.gameOver = true;
+                    this.showMessage(`Congratulations! You won! Word completion bonus: +${SCORE_CONFIG.wordCompletion} points`);
+                    this.updateHighScore();
+                } else if (this.lives === 0) {
+                    this.gameOver = true;
+                    this.showMessage(`Game Over! The word was: ${this.word}`);
+                }
+            }
+
+            updateHighScore() {
+                if (this.score > this.highScore) {
+                    this.highScore = this.score;
+                    localStorage.setItem('hangmanHighScore', this.highScore);
+                }
+            }
+
+            showMessage(msg) {
+                document.getElementById('message').textContent = msg;
+            }
+
+            updateDisplay() {
+                // Update scores and lives
+                document.getElementById('current-score').textContent = this.score;
+                document.getElementById('high-score').textContent = this.highScore;
+                document.getElementById('lives').textContent = this.lives;
+
+                // Update word display
+                const wordDisplay = this.word
+                    .split('')
+                    .map(letter => this.guessedLetters.has(letter) ? letter : '_')
+                    .join(' ');
+                document.getElementById('word').textContent = wordDisplay;
+            }
+        }
+
+        // Start the game when the page loads
+        window.addEventListener('load', () => {
+            new HangmanGame();
+        });
+    </script>
+</body>
+</html> 
